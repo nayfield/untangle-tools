@@ -10,5 +10,7 @@ This is the reference implementation with a few changes:
 
 That's about it.
 
+## Here is a screenshot
+
 ![Screenshot](screenshot.png?raw=true "Screenshot")
 
