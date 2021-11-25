@@ -5,6 +5,7 @@ from uvm import Uvm
 import urllib2
 import cgi
 import simplejson as json
+import os
 
 # When you include a custom.py file in your custom captive portal zip file
 # you get full control over the capture and authentication process.
@@ -49,15 +50,16 @@ def index(req,rawpath,webpath,appid,host,uri,errorText=None):
     page += "</HEAD><BODY ONLOAD='FocusOnInput()'>"
     page += "<H1>Account registration</H1>"
     if errorText and len(errorText) > 0:
-        page += "<P><H4><FONT color=\"red\">%s</font></H4></P>" % errorText
+        page += "<P><H2><FONT color=\"red\">%s</font></H2></P>" % errorText
     page += "<FORM AUTOCOMPLETE='OFF' METHOD='POST' ACTION='/capture/handler.py/custom_handler?appid=" + appid + "'>"
     page += "<TABLE BORDER=0 CELLPADDING=8>"
     page += "<TR><TD>Username</TD><TD><INPUT WIDTH=80 TYPE='text' NAME='username' ID='username'></INPUT></TD></TR>"
     page += "<TR><TD>Password</TD><TD><INPUT WIDTH=80 TYPE='password' NAME='pwd' ID='pwd'></INPUT></TD></TR>"
     page += "<TR><TD>Email</TD><TD><INPUT WIDTH=80 TYPE='text' NAME='email' ID='email'></INPUT></TD></TR>"
-    page += "<TR><TD>Firsname</TD><TD><INPUT WIDTH=80 TYPE='text' NAME='firstname' ID='firstname'></INPUT></TD></TR>"
-    page += "<TR><TD>Lastname</TD><TD><INPUT WIDTH=80 TYPE='text' NAME='lastname' ID='lastname'></INPUT></TD></TR>"
+    page += "<TR><TD>Name</TD><TD><INPUT WIDTH=80 TYPE='text' NAME='firstname' ID='firstname'></INPUT></TD></TR>"
+    page += "<TR><TD>Registration Password</TD><TD><INPUT WIDTH=80 TYPE='text' NAME='regpass' ID='regpass'></INPUT></TD></TR>"
     page += "</TABLE>"
+    page += "<H2>Get the registration password from somebody who lives here</H2>"
     page += "<INPUT TYPE='hidden' NAME='host' ID='host' VALUE='" + host + "'></INPUT>"
     page += "<INPUT TYPE='hidden' NAME='uri' ID='uri' VALUE='" + uri + "'></INPUT>"
     page += "<P><BUTTON TYPE='submit' NAME='submit' ID='submit' TITLE='Register' value='Register'>Register</BUTTON>"
@@ -84,7 +86,7 @@ def handler(req,rawpath,webpath,appid):
     uri = req.form['uri'].value
     action = req.form['submit'].value
     fn = req.form['firstname'].value
-    ln = req.form['lastname'].value
+    rp = req.form['regpass'].value
 
     # first we get the uvm context
     context = Uvm().getUvmContext()
@@ -111,8 +113,15 @@ def handler(req,rawpath,webpath,appid):
         if not localDirectory:
             raise Exception("The uvm node manager could not locate the local directory instance")
         if action == 'Register':
+            fp = os.path.dirname(os.path.realpath(__file__))
+            f=open(os.path.join(fp, "password"), "r")
+            pw=f.readline().strip()
+            f.close()
+            if rp != pw:
+                return index(req,rawpath,webpath,appid,host,uri,"That's not the right password !")
+
             if email and len(email.strip()) > 0 and pwd and len(pwd.strip()) > 0 and uname and len(uname.strip()) > 0:
-                userToRegister={"email": "%s"%email, "firstName":"%s"%fn, "lastName":"%s"%ln, "password":"%s"%pwd, "username":"%s"%uname, "javaClass":"com.untangle.uvm.LocalDirectoryUser"}
+                userToRegister={"email": "%s"%email, "firstName":"%s"%fn, "password":"%s"%pwd, "username":"%s"%uname, "javaClass":"com.untangle.uvm.LocalDirectoryUser"}
                 if not localDirectory.userExists(userToRegister):
                     localDirectory.addUser(userToRegister)
                     capture.userAuthenticate(address, uname, pwd)
