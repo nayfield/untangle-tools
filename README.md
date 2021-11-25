@@ -14,3 +14,33 @@ That's about it.
 
 ![Screenshot](screenshot.png?raw=true "Screenshot")
 
+
+## Issues
+
+* None of the fields are validated. Probaly will crash if user puts spaces or underscores in username for example.
+  * This is same as original script.
+* MVP is simpler
+  * MVP is having a secret needed to log in **plus** a good faith ask for the user to say who they are.
+  * Only need to ask two questions - what's the secret - and who do you claim to be?
+
+
+## Thoughts to reduce friction
+
+* Autogenerate userID and Password - no need to give to user.
+* Record whatever they claim to be as First Name 
+* Set expiration for user. Like the old quote "Guests, like fish, begin to smell after three days"
+* Cookies that match expiration to avoid re-prompting
+* Will need a user cull process - expired users remain in local db.
+
+Alternative idea:
+
+* No actual local user differentation - just site password and log what they give as 'name'
+* Probably closer to MVP for occasional small quantities of visitors.  
+* IP or MAC is likely good enough 
+
+TODO: Based on the final item on the two above ideas ... determine if there is any benefit to having user native in untangle UI vs. needing to lookup.  
+
+Alternative is probably the better solution given small number of users and much smaller expectation of needing to investiage issues.
+
+
+
