@@ -10,6 +10,14 @@ This is the reference implementation with a few changes:
 
 That's about it.
 
+### How to use
+
+1. checkout this repo
+2. make a file 'password' with one line that is the password
+3. `make custom.zip` and upload the result to your untangle
+4. when guests are over, tell them the password they need to register
+
+
 ## Here is a screenshot
 
 ![Screenshot](screenshot.png?raw=true "Screenshot")
@@ -19,7 +27,7 @@ That's about it.
 
 * None of the fields are validated. Probaly will crash if user puts spaces or underscores in username for example.
   * This is same as original script.
-* MVP is simpler
+* MVP of what I want is simpler
   * MVP is having a secret needed to log in **plus** a good faith ask for the user to say who they are.
   * Only need to ask two questions - what's the secret - and who do you claim to be?
 
